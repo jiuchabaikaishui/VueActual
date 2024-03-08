@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <link rel="stylesheet" href="../css/basic.css">
+
+    <style>
+        .active {
+            border: 1px solid red;
+            width: 100px;
+            height: 100px;
+        }
+        .err {
+            background-color: orange;
+        }
+        .text {
+            font-size: 18;
+            color: cyan;
+        }
+        .default {
+            border-radius: 10px;
+        }
+        .tab > ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .tab > ul > li {
+            float: left;
+            width: 80px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-top: 1px solid blue;
+            border-left: 1px solid blue;
+            box-sizing: border-box;
+        }
+        .tab > ul > li.current {
+            background-color: orange;
+        }
+        .tab > ul > li:last-child {
+            border-right: 1px solid blue;
+        }
+        .tab > div {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>Vue2 基础一指令</h2>
+
+        <h3>Hello world!</h3>
+        <div>{{msg}}</div>
+        <div>{{1 + 2}}</div>
+        <div>{{msg + 'a' + 'b'}}</div>
+
+        <h3>指令</h3>
+
+        <h4>v-cloak 指令</h4>
+        <div v-cloak>{{msg}}</div>
+
+        <h4>数据绑定指令</h4>
+        <div>{{msg1}}</div>
+        <div v-text="msg1"></div>
+        <div v-html="msg1"></div>
+        <div v-pre>{{msg1}}</div>
+
+        <h4>v-once 指令</h4>
+        <div v-once>{{msg1}}</div>
+
+        <h4>v-model 双向绑定指令</h4>
+        <input type="text" v-model="msg">
+
+        <h4>事件绑定指令</h4>
+        <!-- 在 html 中使用 data 里面的数据不需要使用 this -->
+        <button v-on:click="num++">按钮1</button>
+        <button @click="num++">按钮2</button>
+        <!-- 事件函数调用 -->
+        <button @click="handle">按钮3</button>
+        <button @click="handle()">按钮4</button>
+        <!-- 事件函数传参 -->
+        <button @click="handle1">按钮5</button>
+        <button @click="handle2(1, 2, $event)">按钮6</button>
+
+        <h4>事件修饰符</h4>
+        <div @click="handle" style="background-color: red;">
+            <button @click="handle1">按钮1</button>
+            <a href="https://www.baidu.cn/" @click.prevent="handle">百度</a>
+            <button @click.stop="handle1">按钮2</button>
+        </div>
+        <div @click.self="handle" style="background-color: cyan;">
+            <button @click="handle1">按钮3</button>
+        </div>
+        <input type="text" v-on:keyup.enter.delete.left.up="handle">
+        <input type="text" v-on:keyup.65="handle">
+        <input type="text" v-on:keyup.kbA="handle">
+
+        <h4>简单计算器案例</h4>
+        <div>
+            <span>数值A：</span>
+            <input type="text" v-model="a"> <br />
+            <span>数值B：</span>
+            <input type="text" v-model="b"> <br />
+            <button v-on:click="plus">相加计算</button> <br />
+            <span>结果：</span>
+            <span v-text="result"></span>
+        </div>
+
+        <h4>属性绑定</h4>
+        <a v-bind:href="baiduUrl">百度</a>
+        <a :href="baiduUrl">百度1</a>
+        <!-- v-model原理 -->
+        <div>{{msg}}</div>
+        <input type="text" v-bind:value="msg" v-on:input="inputHandle">
+        <input type="text" :value="msg" @input="msg = $event.target.value;">
+        <!-- 绑定对象 -->
+        <div v-bind:class="{active: isActive, err: isErr}">绑定对象</div>
+        <!-- 绑定数组 -->
+        <div v-bind:class="[activeClass, errClass]">绑定数组</div>
+        <!-- 对象绑定和数组绑定可以结合使用 -->
+        <div v-bind:class="[activeClass, errClass, {text: isText}]">对象绑定和数组绑定可以结合使用</div>
+        <!-- class绑定的值可以简化操作 -->
+        <div :class="objClasses">class绑定的值可以简化操作</div>
+        <div :class="arrClasses">class绑定的值可以简化操作</div>
+        <!-- 默认的class会保留 -->
+        <div class="default" :class="objClasses">默认的class会保留</div>
+        <button v-on:click="classHandle">切换</button>
+        <!-- style样式绑定 -->
+        <div :style="{border: borderStyle, width: widthStyle, height: heightStyle}"></div>
+        <div :style="objStyles"></div>
+        <div :style="[objStyles, overrideStyles]"></div>
+        <button @click="styleHandle">切换</button>
+        <!-- 分支结构 -->
+        <div v-if="score>=90">优秀</div>
+        <div v-else-if="score<90&&score>=80">良好</div>
+        <div v-else-if="score<80&&score>=60">一般</div>
+        <div v-else>差</div>
+        <div v-show="flag">v-show</div>
+        <button @click="showHandle" v-text="flag ? '隐藏' : '显示'"></button>
+        <!-- 循环结构 -->
+        <div :key="value.id" v-for="(value, index) in fruits">
+            <div v-if="value.id>1" :key="i" v-for="(v, k, i) in value" v-text="k + ': ' + v"></div>
+        </div>
+
+        <!-- 选项卡案例 -->
+        <div class="tab">
+            <ul>
+                <li :class="currentIndex === i ? 'current' : ''" :key="v.id" v-for="(v, i) in list" v-text="v.title" @click="currentIndex = i"></li>
+            </ul>
+            <div>
+                <img v-bind:src="'../' + list[currentIndex].path" alt="">
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        Vue.config.keyCodes.kbA = 65;
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'Hello Vue!',
+                msg1: '<h1>Hello Vue</h1>',
+                num: 0,
+                a: '',
+                b: '',
+                result: '',
+                baiduUrl: 'https://www.baidu.cn/',
+                isActive: true,
+                isErr: true,
+                isText: true,
+                activeClass: 'active',
+                errClass: 'err',
+                textClass: 'text',
+                arrClasses: ['active', 'err', 'text'],
+                objClasses: {active: true, err: true, text: true},
+                borderStyle: '1px solid blue',
+                widthStyle: '100px',
+                heightStyle: '200px',
+                objStyles: {
+                    border: '1px solid green',
+                    width: '200px',
+                    height: '100px'
+                },
+                overrideStyles: {
+                    border: '5px solid orange',
+                    backgroundColor: 'blue'
+                },
+                score: 99,
+                flag: true,
+                fruits: [{
+                    id: 1,
+                    ename: 'apple',
+                    cname: '苹果'
+                },{
+                    id: 2,
+                    ename: 'orange',
+                    cname: '橘子'
+                },{
+                    id: 3,
+                    ename: 'banana',
+                    cname: '香蕉'
+                }],
+                currentIndex: 0, // 选项卡当前的索引
+                list: [{
+                    id: 1,
+                    title: 'apple',
+                    path: 'img/apple.png'
+                },{
+                    id: 2,
+                    title: 'orange',
+                    path: 'img/orange.png'
+                },{
+                    id: 3,
+                    title: 'lemon',
+                    path: 'img/lemon.png'
+                }]
+            },
+            methods: {
+                handle: function() {
+                    // 在函数中 使用data里面的数据 一定要加this 
+                    console.log('num: ', this.num);
+                },
+                handle1: function(e) {
+                    console.log(e.target.innerHTML);
+                },
+                handle2: function(p1, p2, e) {
+                    console.log('p1: ', p1);
+                    console.log('p2: ', p2);
+                    console.log(e.target.innerHTML);
+                },
+                plus: function() {
+                    this.result = parseInt(this.a) + parseInt(this.b);
+                },
+                inputHandle: function(e) {
+                     this.msg = e.target.value;
+                },
+                classHandle: function() {
+                    this.isActive = !this.isActive;
+                    this.isErr = !this.isErr;
+                    this.isText = !this.isText;
+                    if (this.activeClass === '') {
+                        this.activeClass = 'active';
+                    } else {
+                        this.activeClass = '';
+                    }
+                    if (this.errClass === '') {
+                        this.errClass = 'err';
+                    } else {
+                        this.errClass = '';
+                    }
+                    this.objClasses.active = !this.objClasses.active;
+                    this.objClasses.err = !this.objClasses.err;
+                    this.objClasses.text = !this.objClasses.text;
+                    if (this.arrClasses.length > 0) {
+                        this.arrClasses = [];
+                    } else {
+                        this.arrClasses = [this.activeClass, this.errClass, this.textClass];
+                    }
+                },
+                styleHandle: function() {
+                    if (this.heightStyle === '100px') {
+                        this.heightStyle = '200px';
+                    } else {
+                        this.heightStyle = '100px';
+                    }
+                    if (this.objStyles.width === '100px') {
+                        this.objStyles.width = '200px';
+                    } else {
+                        this.objStyles.width = '100px';
+                    }
+                },
+                showHandle: function() {
+                    this.flag = !this.flag;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算属性</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>计算属性</h2>
+
+        <h3>计算属性使用</h3>
+        <div>{{ msg }}</div>
+        <div>{{ msg.split('').reverse().join('') }}</div>
+        <div>{{ reverseString }}</div>
+
+        <h3>计算属性与方法的区别</h3>
+        计算属性是基于依赖进行缓存的，而方法不缓存。
+        <div>{{ sqrM() }}</div>
+        <div>{{ sqrM() }}</div>
+        <div>{{ sqrA }}</div>
+        <div>{{ sqrA }}</div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'hello',
+                num: 100
+            },
+            computed: {
+                reverseString: function() {
+                    return this.msg.split('').reverse().join('');
+                },
+                sqrA: function() {
+                    console.log('sqrA');
+                    return this.num * this.num;
+                }
+            }, 
+            methods: {
+                sqrM: function() {
+                    console.log('sqrM');
+                    return this.num * this.num;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

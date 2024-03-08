@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>补充</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>常用特性补充</h2>
+        <h3>数组</h3>
+        <input type="text" placeholder="请输入水果名" v-model="fname">
+        <button @click="addHandle">添加</button>
+        <ul>
+            <li :key="index" v-for="(model, index) in list">{{ model }} <button @click="deleteHandle(model)">删除</button></li>
+        </ul>
+
+        <h3>对象</h3>
+        <div>
+            <div>{{ info.name }}</div>
+            <div>{{ info.age }}</div>
+            <div>{{ info.gender }}</div>
+            <div>{{ info.height }}</div>
+        </div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                list: [
+                    '苹果',
+                    '梨子',
+                    '桔子'
+                ],
+                fname: '',
+                info: {
+                    name: '张三',
+                    age: 18
+                }
+            },
+            methods: {
+                addHandle: function() {
+                    this.list.unshift(this.fname);
+                    this.fname = '';
+                },
+                deleteHandle: function(n) {
+                    // let i = this.list.indexOf(n);
+                    // this.list.splice(i, 1);
+                    this.list = this.list.filter((v) => {
+                        return n !== v;
+                    });
+                }
+            }
+        });
+
+        // vm.list[0] = '榴莲';
+        // vm.list[3] = '菠萝';
+        Vue.set(vm.list, 0, '香蕉');
+        vm.$set(vm.list, 3, '荔枝');
+
+        // vm.info.age = 20;
+        // vm.info.gender = '女';
+        Vue.set(vm.info, 'age', 8);
+        vm.$set(vm.info, 'gender', '男');
+    </script>
+</body>
+</html>

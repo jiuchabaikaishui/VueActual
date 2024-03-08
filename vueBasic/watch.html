@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监听器 watch</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>监听器 watch</h2>
+
+        <h3>基本使用</h3>
+        <div>
+            姓：<input type="text" v-model="firstName">
+        </div>
+        <div>
+            名：<input type="text" v-model="lastName">
+        </div>
+        <div>{{ fullName }}</div>
+
+        <h3>用户名校验案例</h3>
+        <div>
+            <input type="text" placeholder="请输入用户名" v-model.lazy="userName">
+            <span>{{ message }}</span>
+        </div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let app = new Vue({
+            el: '#app',
+            data: {
+                firstName: '',
+                lastName: '',
+                fullName: '',
+                userName: '',
+                message: ''
+            },
+            watch: {
+                firstName: function(v) {
+                    // v表示变化之后的值
+                    this.fullName = v + this.lastName;
+                },
+                lastName: function(v) {
+                    // v表示变化之后的值
+                    this.fullName = this.firstName + v;
+                },
+                userName: function(v) {
+                    setTimeout(() => {
+                        if (v === 'zs' || v === 'ls' || v == 'ww') {
+                            this.message = '该用户名已经存在，请更换';
+                        } else if (v.length > 0) {
+                            this.message = '该用户名可以使用';
+                        } else {
+                            this.message = '';
+                        }
+                    }, 1000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

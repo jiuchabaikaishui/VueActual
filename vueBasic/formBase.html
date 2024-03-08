@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表单基础使用</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+    <style>
+        form > div {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <h2>表单基础使用</h2>
+        <div id="app">
+            <h3>基于Vue的表单操作</h3>
+            <form action="https://www.baidu.com">
+                <div>
+                    姓名：
+                    <input type="text" v-model="uname">
+                </div>
+                <div>
+                    性别：
+                    <input type="radio" id="male" value="1" v-model="gender">
+                    <label for="male">男</label>
+                    <input type="radio" id="female" value="2" v-model="gender">
+                    <label for="female">女</label>
+                </div>
+                <div>
+                    爱好：
+                    <input type="checkbox" id="ball" value="1" v-model="hobby">
+                    <label for="ball">打球</label>
+                    <input type="checkbox" id="sing" value="2" v-model="hobby">
+                    <label for="sing">唱歌</label>
+                    <input type="checkbox" id="code" value="3" v-model="hobby">
+                    <label for="code">写代码</label>
+                </div>
+                <div>
+                    职业：
+                    <select v-model="occupation">
+                        <option value="0">请选择职业……</option>
+                        <option value="1">程序员</option>
+                        <option value="2">公务员</option>
+                        <option value="3">医生</option>
+                    </select>
+                </div>
+                <div>
+                    特长：
+                    <select v-model="strongPoint" multiple>
+                        <option value="0">请选择特长……</option>
+                        <option value="1">篮球</option>
+                        <option value="2">羽毛球</option>
+                        <option value="3">乒乓球</option>
+                    </select>
+                </div>
+                <div>
+                    简介：
+                    <textarea v-model="desc"></textarea>
+                </div>
+                <input type="submit" value="提交" @click.prevent="handle">
+            </form>
+            <h3>表单域修饰符</h3>
+            <div>
+                number：
+                <input type="text" v-model="age"> <span v-text="age + 10"></span>
+                <input type="text" v-model.number="age1"> <span v-text="age1 + 10"></span>
+            </div>
+            <div>
+                trim：
+                <input type="text" v-model="info"> <span v-text="'长度' + info.length"></span>
+                <input type="text" v-model.trim="info1"> <span v-text="'长度' + info1.length"></span>
+            </div>
+            <div>
+                lazy：
+                <input type="text" v-model="msg"> <span v-text="msg"></span>
+                <input type="text" v-model.lazy="msg1"> <span v-text="msg1"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                uname: '张三',
+                gender: '1',
+                hobby: ['2'],
+                occupation: '0',
+                strongPoint: ['1', '2'],
+                desc: '',
+                age: '',
+                age1: '',
+                info: '',
+                info1: '',
+                msg: '',
+                msg1: ''
+            },
+            methods: {
+                handle: function() {
+                    console.log('--------------');
+                    console.log('uname: ', this.uname);
+                    console.log('gender: ', this.gender);
+                    console.log('hobby: ', this.hobby);
+                    console.log('hobby: ', this.hobby.toString());
+                    console.log('occupation: ', this.occupation);
+                    console.log('strongPoint: ', this.strongPoint);
+                    console.log('desc: ', this.desc);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

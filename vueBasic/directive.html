@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义指令</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>自定义指令</h2>
+        <h3>自定义全局指令</h3>
+        <input type="text" v-focus v-color="color">
+        <h3>自定义局部指令</h3>
+        <input type="text" v-focus1 v-color1="color">
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        Vue.directive('focus', {
+            inserted: function(el) {
+                el.focus();
+            }
+        });
+        Vue.directive('color', {
+            bind: function(el, banding) {
+                console.log('color: ', banding);
+                el.style.backgroundColor = banding.value;
+            }
+        });
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                color: 'orange'
+            },
+            directives: {
+                focus1: {
+                    inserted: function(el) {
+                        el.focus();
+                    }
+                },
+                color1: {
+                    bind: function(el, banding) {
+                        console.log('color1: ', banding);
+                        el.style.backgroundColor = banding.value;
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

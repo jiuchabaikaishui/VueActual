@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>过滤器</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+
+    <style>
+        #Abc {
+            color: red;
+        }
+        #abc {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>过滤器</h2>
+
+        <h3>基本用法</h3>
+        <input type="text" placeholder="请输入英文字母" v-model="msg">
+        <div>
+            全局过滤器：<span :id="msg | upper">{{ msg | upper }}</span>
+        </div>
+        <div>
+            局部过滤器：<span :id="msg | lower">{{ msg | lower }}</span>
+        </div>
+        <div>
+            过滤器级联操作：<span :id="msg | lower | upper">{{ msg | upper | lower }}</span>
+        </div>
+
+        <h3>带参数的过滤器</h3>
+        <div>{{ date }}</div>
+        <div>{{ date | fomat('yyyy-MM-dd') }}</div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        // 全局过滤器
+        Vue.filter('upper', function(v){
+            return v.charAt(0).toUpperCase() + v.slice(1);
+        });
+        Vue.filter('fomat', function(v, ag) {
+            function dateFormat(date, format) {
+                if (typeof date === "string") {
+                    var mts = date.match(/(\/Date\((\d+)\)\/)/);
+                    if (mts && mts.length >= 3) {
+                        date = parseInt(mts[2]);
+                    }
+                }
+                date = new Date(date);
+                if (!date || date.toUTCString() == "Invalid Date") {
+                    return "";
+                }
+                var map = {
+                    "M": date.getMonth() + 1, //月份 
+                    "d": date.getDate(), //日 
+                    "h": date.getHours(), //小时 
+                    "m": date.getMinutes(), //分 
+                    "s": date.getSeconds(), //秒 
+                    "q": Math.floor((date.getMonth() + 3) / 3), //季度 
+                    "S": date.getMilliseconds() //毫秒 
+                };
+
+                format = format.replace(/([yMdhmsqS])+/g, function(all, t) {
+                    var v = map[t];
+                    if (v !== undefined) {
+                        if (all.length > 1) {
+                            v = '0' + v;
+                            v = v.substr(v.length - 2);
+                        }
+                        return v;
+                    } else if (t === 'y') {
+                        return (date.getFullYear() + '').substr(4 - all.length);
+                    }
+                    return all;
+                });
+                return format;
+            }
+            return dateFormat(v, ag);
+        });
+        let app = new Vue({
+            el: '#app',
+            data: {
+                msg: '',
+                date: new Date()
+            }, 
+            // 局部过滤器
+            filters: {
+                lower: function(v) {
+                    return v.charAt(0).toLowerCase() + v.slice(1);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

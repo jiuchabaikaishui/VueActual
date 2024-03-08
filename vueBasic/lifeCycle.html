@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生命周期</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>生命周期</h2>
+        <div>{{ msg }}</div>
+        <button @click="update">更新</button>
+        <button @click="destroy">销毁</button>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                msg: '我是初始数据'
+            },
+            methods: {
+                update: function() {
+                    this.msg = '我更新了'
+                },
+                destroy: function() {
+                    // 销毁方法
+                    this.$destroy();
+                }
+            },
+            beforeCreate: function(){
+                console.log('beforeCreate');
+            },
+            created: function(){
+                console.log('created');
+            },
+            beforeMount: function(){
+                console.log('beforeMount');
+            },
+            mounted: function(){
+                console.log('mounted');
+            },
+            beforeUpdate: function(){
+                console.log('beforeUpdate');
+            },
+            updated: function(){
+                console.log('updated');
+            },
+            beforeDestroy: function(){
+                console.log('beforeDestroy');
+            },
+            destroyed: function(){
+                console.log('destroyed');
+            }
+        });
+    </script>
+</body>
+</html>
