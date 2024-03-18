@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>子组件向父组件传值</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>子组件向父组件传值</h2>
+        <div :style="{fontSize: fontSize + 'px'}">父组件内容</div>
+        <son-com :data="info" :size="fontSize" @large-text="handle"></son-com>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                info: ['萝卜', '白菜', '土豆'],
+                fontSize: 18
+            },
+            components: {
+                'son-com': {
+                    props: ['data'],
+                    data: function() {
+                        return { size: '' }
+                    },
+                    template: `<div>
+                        <ul>
+                            <li :key='index' v-for='(value, index) in data' v-text='value'></li>
+                        </ul>
+                        <input type='text' v-model.number='size'>
+                        <button @click='$emit("large-text", size)'>增加字号</button>
+                    </div>`
+                }
+            },
+            methods: {
+                handle: function(v) {
+                    console.log('value: ', v);
+                    this.fontSize += v;
+                    console.log(this.fontSize);
+                }
+            }
+        })
+    </script>
+</body>
+</html>

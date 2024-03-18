@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插槽</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>插槽</h2>
+
+        <h3>基本使用</h3>
+        <fancy-button>保存</fancy-button>
+        <fancy-button>确认</fancy-button>
+        <fancy-button></fancy-button>
+
+        <h3>具名插槽</h3>
+        <base-layout>
+            <template v-slot:header>
+                <h4>页眉</h4>
+            </template>
+            <template v-slot:default>
+                <p>主体1</p>
+                <p>主体2</p>
+            </template>
+            <template #footer>
+                <p>页脚</p>
+            </template>
+        </base-layout>
+
+        <!-- 隐式地视为默认插槽 -->
+        <base-layout>
+            <template v-slot:header>
+                <h4>页眉</h4>
+            </template>
+            <p>主体1</p>
+            <p>主体2</p>
+            <template #footer>
+                <p>页脚</p>
+            </template>
+        </base-layout>
+
+        <!-- 使用slot属性 -->
+        <base-layout>
+            <h4 slot="header">页眉</h4>
+            <p>主体1</p>
+            <p>主体2</p>
+            <p slot="footer">页脚</p>
+        </base-layout>
+
+        <h3>作用域插槽</h3>
+        <my-component v-slot="data">
+            {{ data.text }}
+            {{ data.count }}
+        </my-component>
+        <one-component>
+            <template #header="data">
+                {{ data }}
+            </template>
+            <template #default="data">
+                {{ data }}
+            </template>
+            <template #footer="data">
+                {{ data }}
+            </template>
+        </one-component>
+
+        <!-- 该模板无法编译 -->
+        <one-component>
+            <template #header="data">
+                {{ data }}
+            </template>
+            <p v-slot="data">{{ data }}</p>
+            <template #footer="data">
+                {{ data }}
+            </template>
+        </one-component>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            components: {
+                'FancyButton': {
+                    template: `<button>
+                        <!-- 默认内容 -->
+                        <slot>提交</slot>
+                    </button>`
+                },
+                'BaseLayout': {
+                    template: `<div>
+                        <div class='container'>
+                            <header>
+                                <slot name='header'></slot>
+                            </header>
+                            <main>
+                                <slot></slot>
+                            </main>
+                            <footer>
+                                <slot name='footer'></slot>
+                            </footer>
+                        </div>
+                    </div>`
+                },
+                'MyComponent': {
+                    template: `<div>
+                        <slot :text='"你好"' v-bind:count='1'></slot>
+                    </div>`
+                },
+                'OneComponent': {
+                    template: `<div>
+                        <header>
+                            <slot name='header' :msg='"早上好"' v-bind:uname='"张三"''></slot>
+                        </header>
+                        <main>
+                            <slot :msg='"中午好"' v-bind:uname='"李四"'></slot>
+                        </main>
+                        <footer>
+                            <slot name='footer' v-bind:msg='"晚上好"' :uname='"王五"'></slot>
+                        </footer>
+                    </div>`
+                }
+            }
+        });
+    </script>
+</body>
+</html>

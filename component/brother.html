@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>兄弟组件传值</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>兄弟组件传值</h2>
+        <div>
+            <one-com></one-com>
+            <two-com></two-com>
+            <button @click="destroy">销毁</button>
+        </div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        // 事件中心
+        let hub = new Vue();
+
+        // 组件one
+        Vue.component('one-com', {
+            data: function() {
+                return { count: 0 };
+            },
+            template: `<div>
+                <div v-text='"one: " + count'></div>
+                <button @click='handle'>点击</button>
+            </div>`,
+            methods: {
+                handle: function() {
+                    // 触发事件
+                    hub.$emit('one-event', 1);
+                }
+            },
+            mounted: function() {
+                // 监听事件
+                hub.$on('two-event', (v) => {
+                    this.count += v;
+                });
+            }
+        });
+
+        // 组件two
+        Vue.component('two-com', {
+            data: function() {
+                return { count: 0 };
+            },
+            template: `<div>
+                <div v-text='"two: " + count'></div>
+                <button @click='handle'>点击</button>
+            </div>`,
+            methods: {
+                handle: function() {
+                    hub.$emit('two-event', 2);
+                }
+            },
+            mounted: function() {
+                hub.$on('one-event', (v) => {
+                    this.count += v;
+                });
+            }
+        });
+        let vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+                destroy: function() {
+                    hub.$off('one-event');
+                    hub.$off('two-event');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

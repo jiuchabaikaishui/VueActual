@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件化案例-购物车</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+
+    <style>
+        .container {
+        }
+        .container .cart {
+            margin: auto;
+            width: 300px;
+        }
+        .container .cart .title {
+            text-align: center;
+            font-size: 20px;
+            line-height: 44px;
+            background-color: #ADD8E6;
+        }
+        .container .cart .item {
+            height: 55px;
+            line-height: 55px;
+            position: relative;
+            border-top: 1px solid #ADD8E6;
+        }
+        .container .cart .item img {
+            width: 45px;
+            height: 45px;
+            margin-left: 10px;
+            margin-top: 5px;
+        }
+        .container .cart .item .name {
+            width: 85px;
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            left: 60px;
+            font-size: 14px;
+        }
+        .container .cart .item .change {
+            position: absolute;
+            top: 0px;
+            right: 50px;
+            width: 100px;
+        }
+        .container .cart .item .change a {
+            vertical-align: middle;
+            font-size: 20px;
+            width: 30px;
+            text-decoration: none;
+            background-color: lightgray;
+        }
+        .container .cart .item .change .num {
+            width: 40px;
+            height: 25px;
+        }
+        .container .cart .item .del {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            font-size: 40px;
+            width: 50px;
+            text-align: center;
+            cursor: pointer;
+            color: red;
+        }
+        .container .cart .item .del:hover {
+            background-color: orange;
+        }
+        .container .cart .total {
+            background-color: orange;
+            text-align: right;
+            line-height: 50px;
+        }
+        .container .cart .total span {
+            color: red;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .container .cart .total button {
+            background-color: #DC4C40;
+            width: 80px;
+            height: 35px;
+            border: 0px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>组件化案例-购物车</h2>
+        <div class="container">
+            <my-cart></my-cart>
+        </div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        Vue.component('MyCart', {
+            data: function() {
+                return {
+                    title: '我的商品',
+                    list: [{
+                        id: 1,
+                        name: 'TCL彩电',
+                        price: 100,
+                        num: 1,
+                        img: 'img/a.jpg'
+                    },{
+                        id: 2,
+                        name: '机顶盒',
+                        price: 200,
+                        num: 1,
+                        img: 'img/b.jpg'
+                    },{
+                        id: 3,
+                        name: '海尔冰箱',
+                        price: 300,
+                        num: 1,
+                        img: 'img/c.jpg'
+                    },{
+                        id: 4,
+                        name: '小米手机',
+                        price: 400,
+                        num: 1,
+                        img: 'img/d.jpg'
+                    },{
+                        id: 5,
+                        name: 'PPTV电视',
+                        price: 500,
+                        num: 2,
+                        img: 'img/e.jpg'
+                    }]
+                }
+            },
+            template: `
+                <div class="cart">
+                    <cart-title :title='title'></cart-title>
+                    <cart-list :list='list' @cart-del='deleteCart' @cart-change='changCartNum'></cart-list>
+                    <cart-total :list='list'></cart-total>
+                </div>
+            `,
+            methods: {
+                deleteCart: function(i) {
+                    this.list.splice(i, 1);
+                },
+                changCartNum: function(i, t, v) {
+                    let item = this.list[i];
+                    if (t === 'sub') {
+                        if (item.num <= 0) return;
+                        item.num--;
+                    } else if (t === 'add') {
+                        item.num++;
+                    } else {
+                        item.num = v;
+                    }
+                }
+            },
+            components: {
+                'CartTitle': {
+                    props: ['title'],
+                    template: `
+                        <div class="title" v-text='title'></div>
+                    `
+                },
+                'CartList': {
+                    props: ['list'],
+                    template: `
+                        <div>
+                            <div class="item" :key="v.id" v-for="(v, i) in list">
+                                <img :src="'../' + v.img" alt="">
+                                <div class="name" v-text="v.name"></div>
+                                <div class="change">
+                                    <a href="javascritp:;" @click.prevent='$emit("cart-change", i, "sub")'>－</a>
+                                    <input type="text" class="num" :value='v.num' @blur='$emit("cart-change", i, "change", $event.target.value)'>
+                                    <a href="javascritp:;" @click.prevent='$emit("cart-change", i, "add")'>＋</a>
+                                </div>
+                                <div class="del" @click='$emit("cart-del", i)'>×</div>
+                            </div>
+                        </div>
+                    `
+                },
+                'CartTotal': {
+                    props: ['list'],
+                    template: `
+                        <div class="total">
+                            <span v-text='"总价：" + totalAmount'></span>
+                            <button>结算</button>
+                        </div>
+                    `,
+                    computed: {
+                        totalAmount: function() {
+                            let amount = 0;
+                            for (let index = 0; index < this.list.length; index++) {
+                                const element = this.list[index];
+                                amount += element.price * element.num;
+                            }
+                            return amount;
+                        }
+                    }
+                },
+            }
+        });
+        let vm = new Vue({
+            el: '#app',
+            data: {
+
+            }
+        });
+    </script>
+</body>
+</html>

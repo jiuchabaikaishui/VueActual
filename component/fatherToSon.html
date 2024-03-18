@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>父组件向子组件传值</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>父组件向子组件传值</h2>
+
+        <h3>简单使用</h3>
+        <son-com :parent-title="title" :parent-content="content"></son-com>
+
+        <h3>传值类型</h3>
+        <type-com :pstr="123" :pnum="123" :pbool="true" :parr="[1, 2, 3]" :pobj="{ a: '123', b: '456' }"></type-com>
+        <type-com pstr="123" pnum="123" pbool="true" parr="[1, 2, 3]" pobj="{ a: '123', b: '456' }"></type-com>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                title: '标题',
+                content: '内容'
+            },
+            components: {
+                'son-com': {
+                    props: ['parentTitle', 'parentContent'],
+                    data: function() {
+                        return { info: '我的信息' }
+                    },
+                    template: `<div v-text="'title: ' + parentTitle + 'content: ' + parentContent + 'info: ' + info"></div>`
+                },
+                'type-com': {
+                    props: ['pstr', 'pnum', 'pbool', 'parr', 'pobj'],
+                    template: `<div>
+                        <div v-text='typeof pstr'></div>
+                        <div v-text='typeof pnum'></div>
+                        <div v-text='typeof pbool'></div>
+                        <div v-text='typeof parr'></div>
+                        <div v-text='typeof pobj'></div>
+                    </div>`
+                }
+            }
+        });
+    </script>
+</body>
+</html>

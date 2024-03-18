@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试工具（vue-devTools）</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main">
+        <h2>调试工具（vue-devTools）</h2>
+        <div id="app">
+            <div v-text="root"></div>
+            <first-com></first-com>
+        </div>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        Vue.component('first-com', {
+            data: function() {
+                return { first: '一级组件' }
+            },
+            template: `
+                <div>
+                    <div v-text='first'></div>
+                    <second-com></second-com>
+                </div>
+            `
+        });
+        Vue.component('second-com', {
+            data: function() {
+                return { second: '二级组件' }
+            },
+            template: `
+                <div v-text='second'></div>
+            `
+        });
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                root: '顶层根组件'
+            }
+        });
+    </script>
+</body>
+</html>
