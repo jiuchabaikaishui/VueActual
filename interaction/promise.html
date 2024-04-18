@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promise</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>Promise</h2>
+        <h3>异步</h3>
+        <button @click="asynHandle">异步</button>
+        <button @click="mutableAsynHandle">多个异步任务</button>
+        <button @click="nestAsynHandle">嵌套异步任务</button>
+        <h3>基本使用</h3>
+        <button @click="baseHandle">Promise 基本使用</button>
+        <h3>基于Promise处理Ajax请求</h3>
+        <button @click="sendAjaxHandle">发送请求</button>
+        <button @click="sendMutableAjaxHandle">发送多次请求</button>
+        <button @click="thenResultHandle">then参数中的返回值</button>
+        <h3>Promise常用的API</h3>
+        <button @click="apiHandle">执行</button>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                
+            },
+            methods: {
+                asynHandle: function() {
+                    // 定时任务
+                    let v = 1;
+                    setTimeout(() => {
+                        v = 2;
+                    }, 1000);
+                    console.log('v: ', v);
+                },
+                mutableAsynHandle: function() {
+                    // 多次异步调用
+                    $.get('http:localhost/data1', function(data) {
+                        console.log('data: ', data);
+                    });
+                    $.get('http:localhost/data2', function(data) {
+                        console.log('data: ', data);
+                    });
+                    $.get('http:localhost/data3', function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                nestAsynHandle: function() {
+                    // 嵌套调用
+                    $.get('http:localhost/data1', function(data) {
+                        console.log('data: ', data);
+                        $.get('http:localhost/data2', function(data) {
+                            console.log('data: ', data);
+                            $.get('http:localhost/data3', function(data) {
+                                console.log('data: ', data);
+                            });
+                        });
+                    });
+                },
+                baseHandle: function() {
+                    let p = new Promise(function(resolve, reject) {
+                        setTimeout(() => {
+                            let f = true;
+                            if (f) {
+                                resolve('正常');
+                            } else {
+                                reject('出错啦');
+                            }
+                        }, 1000);
+                    });
+                    p.then(function(data) {
+                        console.log('data: ', data);
+                    }, function(info) {
+                        console.log('info: ', info);
+                    });
+                },
+                sendAjaxHandle: function() {
+                    let p = new Promise(function(resolve, reject) {
+                        let xhr = new XMLHttpRequest();
+                        xhr.open('GET', 'http:localhost/data1');
+                        xhr.send();
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    resolve(xhr.responseText);
+                                } else {
+                                    reject('出错啦');
+                                }
+                            }
+                        };
+                    });
+                    p.then(function(data) {
+                        console.log('data: ', data);
+                    }, function(info) {
+                        console.log('info: ', info);
+                    })
+                },
+                sendMutableAjaxHandle: function() {
+                    function queryData(url) {
+                        let p = new Promise(function(resolve, reject) {
+                            let xhr = new XMLHttpRequest();
+                            xhr.open('GET', url);
+                            xhr.send();
+                            xhr.onreadystatechange = function() {
+                                if (xhr.readyState === 4) {
+                                    if (xhr.status === 200) {
+                                        resolve(xhr.responseText);
+                                    } else {
+                                        reject('出错啦');
+                                    }
+                                }
+                            };
+                        });
+                        return p;
+                    }
+                    queryData('http:localhost/data1').then(function(data) {
+                        console.log('data: ', data);
+                        return queryData('http:localhost/data2');
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                        return queryData('http:localhost/data3');
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                thenResultHandle: function() {
+                    function createPromise(flag) {
+                        let q = new Promise(function(resolve, reject) {
+                            setTimeout(() => {
+                                if (flag) {
+                                    resolve('成功');
+                                } else {
+                                    reject('失败');
+                                }
+                            }, 1000);
+                        });
+                        return q;
+                    }
+                    createPromise(false).then(function(data) {
+                        console.log('data: ', data);
+                        return data;
+                    }, function(info) {
+                        console.log('info: ', info);
+                        return info;
+                    }).then(function(data) {
+                        console.log('--data: ', data, '--');
+                    }, function(info) {
+                        console.log('--info: ', info, '--');
+                    })
+                },
+                apiHandle: function() {
+                    function queryData(flag, index) {
+                        let p = new Promise(function(resolve, reject) {
+                            setTimeout(() => {
+                                if (flag) {
+                                    resolve('成功-' + index);
+                                } else {
+                                    reject('失败-' + index);
+                                }
+                            }, 1000);
+                        });
+                        return p;
+                    }
+                    queryData(true, 1).then(function(data){
+                        console.log('then success data: ', data);
+                    }).catch(function(info) {
+                        console.log('catch info: ', info);
+                    }).finally(function() {
+                        console.log('finally');
+                    });
+                    // 打印结果：
+                    // then success data:  成功-1
+                    // finally
+
+                    queryData(false, 2).then(function(data){
+                        console.log('then success data: ', data);
+                    }).catch(function(info) {
+                        console.log('catch info: ', info);
+                    }).finally(function() {
+                        console.log('finally');
+                    });
+                    // 打印结果：
+                    // catch info:  失败-2
+                    // finally
+
+                    Promise.all([queryData(true, 3), queryData(false, 4), queryData(false, 5)]).then(function(result) {
+                        console.log('result: ', result);
+                    }, function(info) {
+                        console.log('error: ', info);
+                    });
+                    // 打印结果：
+                    // error:  失败-4
+
+                    Promise.race([queryData(true, 6), queryData(false, 7), queryData(true, 8)]).then(function(result) {
+                        console.log('result: ', result);
+                    }, function(info) {
+                        console.log('error: ', info);
+                    });
+                    // 打印结果：
+                    // result:  成功-6
+                }
+            }
+        });
+    </script>
+</body>
+</html>

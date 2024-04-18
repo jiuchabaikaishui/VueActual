@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>Fetch</h2>
+
+        <h3>基本使用</h3>
+        <button @click="baseHandle">基本使用</button>
+
+        <h3>请求参数和响应数据</h3>
+        <button @click="getHandle">get</button>
+        <button @click="getDynamicHandle">get 动态参数</button>
+        <button @click="postHandle">post url-encoded</button>
+        <button @click="postJsonHandle">post json</button>
+        <button @click="deleteHandle">delete</button>
+        <button @click="putHandle">put</button>
+
+    </div>
+    
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {
+                baseHandle: function() {
+                    fetch('http://localhost/data1').then(function(response) {
+                        // response 是响应体
+                        console.log('response: ', response);
+                        // text()方法属于fetchAPI的一部分，它返回一个Promise实例对象，用于获取后台返回的数据
+                        let r = response.text();
+                        console.log('text: ', r);
+                        return r;
+                    }).then(function(data) {
+                        // 这里得到的才是最终数据
+                        console.log('data: ', data);
+                    });
+                    // 打印结果：
+                    // response:  Response {type: 'cors', url: 'http://localhost/data1', redirected: false, status: 200, ok: true, …}
+                    // text:  Promise {[[PromiseState]]: 'pending', [[PromiseResult]]: undefined}
+                    // data:  data1
+                },
+                getHandle: function() {
+                    fetch('http://localhost/data?id=1').then(function(res) {
+                        return res.text();
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                getDynamicHandle: function() {
+                    fetch('http://localhost/data/2', {
+                        method: 'get'
+                    }).then(function(res) {
+                        return res.text();
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                postHandle: function() {
+                    fetch('http://localhost/data', {
+                        method: 'post',
+                        body: 'uname=张三&password=123456',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    }).then(function(res) {
+                        return res.text();
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                postJsonHandle: function() {
+                    fetch('http://localhost/data', {
+                        method: 'post',
+                        body: JSON.stringify({
+                            uname: '李四',
+                            password: '123456'
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function(res) {
+                        return res.json();
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                deleteHandle: function() {
+                    fetch('http://localhost/data/3', {
+                        method: 'delete'
+                    }).then(function(res) {
+                        return res.text();
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                putHandle: function() {
+                    fetch('http://localhost/data/4', {
+                        method: 'put',
+                        body: JSON.stringify({
+                            uname: '王五',
+                            password: '123456'
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function(res) {
+                        return res.json();
+                    }).then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+            }
+        })
+    </script>
+</body>
+</html>

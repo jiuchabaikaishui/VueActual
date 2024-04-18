@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../css/basic.css">
     <style>
         .main .library {
-            width: 480px;
+            width: 520px;
             text-align: center;
         }
         .main .add {
@@ -47,6 +47,7 @@
                 编号：<input type="text" placeholder="请输入编号" v-focus v-model="bid" :disabled="!flag">
                 名称：<input type="text" placeholder="请输入名称" v-model="bname">
                 <button @click="addHandle" v-text="flag ? '添加' : '确定'" :disabled="!confirm"></button>
+                <button @click="cancelHandle" :style="{display: flag ? 'none' : 'inline'}">取消</button>
             </div>
             <div class="total" v-text=" '图书总数：' + total"></div>
             <table>
@@ -94,10 +95,15 @@
                     } else { // 编辑
                         let m = this.books.find((v, i) => v.id == this.bid);
                         m.name = this.bname;
-                        this.bid = '';
-                        this.bname = '';
                         this.flag = true;
                     }
+                    this.bid = '';
+                    this.bname = '';
+                },
+                cancelHandle: function() {
+                    this.bid = '';
+                    this.bname = '';
+                    this.flag = true;
                 },
                 editHandle: function(m) {
                     console.log('editHandle');
@@ -181,20 +187,20 @@
                 // 该生命周期钩子函数被触发的时候，模板已经可以使用
                 // 一般此时用于获取后台数据，然后把数据填充到模板
                 this.books = [{
-                    id: 1,
-                    name: '三国演义',
-                    date: 2525609975000
-                },{
-                    id: 2,
-                    name: '水浒传',
+                    id: 4,
+                    name: '西游记',
                     date: 2525609975000
                 },{
                     id: 3,
                     name: '红楼梦',
                     date: 2525609975000
                 },{
-                    id: 4,
-                    name: '西游记',
+                    id: 2,
+                    name: '水浒传',
+                    date: 2525609975000
+                },{
+                    id: 1,
+                    name: '三国演义',
                     date: 2525609975000
                 }];
             }

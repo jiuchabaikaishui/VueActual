@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>async/await用法</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>async/await用法</h2>
+        <button @click="apiHandle">接口调用</button>
+        <button @click="timerHandle">定时器</button>
+        <button @click="mutableHandle">多个异步任务</button>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script src="../js/axios.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {
+                apiHandle: function() {
+                    async function queryData() {
+                        var ret = await axios.get('http://localhost/data/1')
+                        return ret.data;
+                    }
+                    queryData().then(function(data) {
+                        console.log('data: ', data);
+                    });
+                },
+                timerHandle: function() {
+                    async function queryData() {
+                        var ret = await new Promise(function(resolve, reject){
+                            setTimeout(() => {
+                                resolve('100');
+                            }, 1000);
+                        });
+                        return ret;
+                    }
+                    queryData().then(function(res) {
+                        console.log('res: ', res);
+                    });
+                },
+                mutableHandle: function() {
+                    async function queryData() {
+                        var info = await axios.get('http://localhost/data/1');
+                        var ret = await axios.get('http://localhost/data?id=' + info.data.id);
+                        return ret.data;
+                    }
+                    queryData().then(function(data) {
+                        console.log('data: ', data);
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>

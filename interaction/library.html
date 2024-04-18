@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书管理案例</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+    <style>
+        .main .library {
+            width: 520px;
+            text-align: center;
+        }
+        .main .add {
+            background-color: lightcyan;
+            padding-top: 10px;
+            padding-bottom: 5px;
+        }
+        .main .total {
+            background-color: lightcyan;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+        .main table {
+            margin-top: 10px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .main th {
+            background-color: lightgray;
+        }
+        .main th, .main td {
+            border: 1px dashed orange;
+            height: 30px;
+        }
+        .main a {
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>图书管理案例</h2>
+        <div class="library">
+            <div class="add">
+                编号：<input type="text" placeholder="请输入编号" v-model="bid" :disabled="true">
+                名称：<input type="text" placeholder="请输入名称" v-focus v-model="bname">
+                <button @click="addHandle" v-text="flag ? '添加' : '确定'" :disabled="!confirm"></button>
+                <button @click="cancelHandle" :style="{display: flag ? 'none' : 'inline'}">取消</button>
+            </div>
+            <div class="total" v-text=" '图书总数：' + total"></div>
+            <table>
+                <caption>图书馆</caption>
+                <thead>
+                    <tr>
+                        <th>编号</th>
+                        <th>名称</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr :key="i" v-for="(m, i) in books">
+                        <td v-text="m.id"></td>
+                        <td v-text="m.name"></td>
+                        <td>{{ m.date | format('yyyy-MM-dd hh:mm') }}</td>
+                        <td>
+                            <a href="javascript:;" @click="editHandle(m)">编辑</a>
+                            <span> | </span>
+                            <a href="javascript:;" @click="deleteHandle(m)">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/axios.js"></script>
+    <script src="../js/vue.js"></script>
+    <script>
+        // 全局配置 默认地址
+        axios.defaults.baseURL = 'http://localhost:80/';
+        // 响应拦截器
+        axios.interceptors.response.use(function(res) {
+            return res.data;
+        });
+
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                books: [],
+                bid: '',
+                bname: '',
+                flag: true,
+                confirm: false
+            },
+            methods: {
+                addHandle: async function() {
+                    console.log('addHandle');
+                    if (this.flag) { // 添加
+                        let ret = await axios.post('books', {
+                            name: this.bname
+                        })
+                        // 成功重新加载数据
+                        if (ret.code == 200) {
+                            this.queryData();
+                        }
+                    } else { // 编辑
+                        let ret = await axios.put('books', {
+                            id: this.bid,
+                            name: this.bname
+                        });
+                        // 成功重新加载数据
+                        if (ret.code == 200) {
+                            this.queryData();
+                        }
+                        this.flag = true;
+                    }
+                    this.bid = '';
+                    this.bname = '';
+                },
+                cancelHandle: function() {
+                    this.bid = '';
+                    this.bname = '';
+                    this.flag = true;
+                },
+                editHandle: async function(m) {
+                    let ret = await axios.get('books/' + m.id);
+                    if (ret !== null) {
+                        this.bid = ret.id;
+                        this.bname = ret.name;
+                        this.flag = false;
+                    }
+                },
+                deleteHandle: async function(m) {
+                    let ret = await axios.delete('books/' + m.id);
+                    // 成功重新加载数据
+                    if (ret.code == 200) {
+                        this.queryData();
+                    }
+                },
+                queryData: async function() {
+                    this.books = await axios.get('books')
+                }
+            },
+            directives: {
+                focus: {
+                    inserted: function(e) {
+                        e.focus();
+                    }
+                }
+            },
+            computed: {
+                total: function() {
+                    return this.books.length;
+                }
+            },
+            watch: {
+                bname: async function(n) {
+                    if (n.length > 0) {
+                        let ret = await axios.get('books/check/' + n);
+                        console.log('ret: ', ret);
+                        this.confirm = !ret.status;
+                    } else {
+                        this.confirm = false;
+                    }
+                }
+            }, 
+            filters: {
+                format: function(v, f) {
+                    function dateFormat(date, format) {
+                        if (typeof date === "string") {
+                        var mts = date.match(/(\/Date\((\d+)\)\/)/);
+                        if (mts && mts.length >= 3) {
+                            date = parseInt(mts[2]);
+                        }
+                        }
+                        date = new Date(date);
+                        if (!date || date.toUTCString() == "Invalid Date") {
+                        return "";
+                        }
+                        var map = {
+                        "M": date.getMonth() + 1, //月份 
+                        "d": date.getDate(), //日 
+                        "h": date.getHours(), //小时 
+                        "m": date.getMinutes(), //分 
+                        "s": date.getSeconds(), //秒 
+                        "q": Math.floor((date.getMonth() + 3) / 3), //季度 
+                        "S": date.getMilliseconds() //毫秒 
+                        };
+                        format = format.replace(/([yMdhmsqS])+/g, function(all, t) {
+                        var v = map[t];
+                        if (v !== undefined) {
+                            if (all.length > 1) {
+                            v = '0' + v;
+                            v = v.substr(v.length - 2);
+                            }
+                            return v;
+                        } else if (t === 'y') {
+                            return (date.getFullYear() + '').substr(4 - all.length);
+                        }
+                        return all;
+                        });
+                        return format;
+                    }
+                    return dateFormat(v, f);
+                }
+            },
+            mounted: function() {
+                // 该生命周期钩子函数被触发的时候，模板已经可以使用
+                // 一般此时用于获取后台数据，然后把数据填充到模板
+
+                // this.books = [{
+                //     id: 4,
+                //     name: '西游记',
+                //     date: 2525609975000
+                // },{
+                //     id: 3,
+                //     name: '红楼梦',
+                //     date: 2525609975000
+                // },{
+                //     id: 2,
+                //     name: '水浒传',
+                //     date: 2525609975000
+                // },{
+                //     id: 1,
+                //     name: '三国演义',
+                //     date: 2525609975000
+                // }];
+
+                this.queryData();
+            }
+        })
+    </script>
+</body>
+</html>

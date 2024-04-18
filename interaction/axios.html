@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>axios</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>axios</h2>
+        <button @click="handle">请求</button>
+        <button @click="tokenHandle">token 配置请求</button>
+        <button @click="interceptorsHandle">拦截器</button>
+    </div>
+
+    <script src="../js/axios.js"></script>
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {
+                handle: function() {
+                    // get
+                    axios.get('http://localhost/data?id=1')
+                    .then(function(res) {
+                        console.log(res.data);
+                    });
+
+                    // get 动态参数
+                    axios.get('http://localhost/data/2')
+                    .then(function(res) {
+                        console.log(res.data);
+                    });
+
+                    // get params 形式参数
+                    axios.get('http://localhost/data', {
+                        params: {
+                            id: 3
+                        }
+                    }).then(function(res) {
+                        console.log(res.data);
+                    });
+
+                    // post 通过 URLSearchParams 传递url-encoded参数
+                    let params = new URLSearchParams();
+                    params.append('uname', '张三');
+                    params.append('password', '123');
+                    console.log(params);
+                    axios.post('http://localhost/data', params).then(function(res) {
+                        console.log(res.data);
+                    });
+
+                    // post json参数
+                    axios.post('http://localhost/data', {
+                        uname: '李四',
+                        password: '123'
+                    }).then(function(res) {
+                        console.log(res.data);
+                    });
+
+                    // delete 与 get 类似
+                    axios.delete('http://localhost/data?id=4')
+                    .then(function(res) {
+                        console.log(res.data);
+                    });
+                    axios.delete('http://localhost/data/5').then(function(res) {
+                        console.log(res.data);
+                    });
+                    axios.delete('http://localhost/data', {
+                        params: {
+                            id: 6
+                        }
+                    }).then(function(res) {
+                        console.log(res.data);
+                    });
+
+                    // put 与 post 类似
+                    axios.put('http://localhost/data/7', {
+                        uname: '王五',
+                        password: '123'
+                    }).then(function(res) {
+                        console.log(res.data);
+                    });
+                },
+                tokenHandle: function() {
+                    axios.defaults.baseURL = 'http://localhost';
+                    axios.defaults.headers['mytoken'] = 'zhaoliu';
+                    axios.get('data-json')
+                    .then(function(res) {
+                        console.log(res.data);
+                    });
+                    axios.defaults.baseURL = null;
+                    axios.defaults.headers['mytoken'] = null;
+                },
+                interceptorsHandle: function() {
+                    axios.interceptors.request.use(function(config) {
+                        console.log('config: ', config);
+                        console.log('url: ', config.url);
+                        if (config.url.indexOf('/data-json1') !== -1) {
+                            config.headers.mytoken = 'xxxx';
+                        }
+                        return config
+                    });
+                    axios.interceptors.response.use(function(res) {
+                        console.log('response: ', res);
+                        if (res.request.responseURL.indexOf('/data-json1') !== -1) {
+                            return res.data;
+                        }
+                        return res;
+                    }, function(err) {
+                        console.log('err: ', err);
+                    });
+                    axios.get('http://localhost/data-json1')
+                    .then(function(res) {
+                        console.log('data: ', res);
+                    });
+                }
+            }
+        })
+    </script>
+</body>
+</html>
