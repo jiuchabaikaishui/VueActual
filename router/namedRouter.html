@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-router命名路由</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>vue-router命名路由</h2>
+
+        <p>props 被设置为 函数类型：</p>
+        <router-link :to="{ name: 'User', params: { id: 4, name: '李四', age: 18 }}">User 4</router-link>
+
+        <router-view></router-view>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-router_v3.6.5.js"></script>
+    <script>
+        const user = {
+            props: ['id', 'name', 'age'],
+            template: `<h3>User 组件内容 id: {{id}}, name: {{name}}, age: {{age}}</h3>`
+        };
+        const router = new VueRouter({
+            // 命名路由
+            routes: [ { name: 'User', path: '/user/:id', component: user, props: (route) => ({ id: route.params.id, name: route.params.name, age: route.params.age }) } ]
+        });
+        const vm = new Vue({
+            el: '#app',
+            data: {},
+            router
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-router编程式导航</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>vue-router编程式导航</h2>
+
+        <h3>声明式导航</h3>
+        <router-link :to="{ name: 'User', params: { id: 1, name: '张三', age: 18 }}">User 1</router-link>
+
+        <h3>编程式导航</h3>
+        <button @click="strHandle">字符串</button>
+        <button @click="objHandle">对象</button>
+        <button @click="nameHandle">命名路由</button>
+        <button @click="queryHandle">查询路由</button>
+
+        <router-view></router-view>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-router_v3.6.5.js"></script>
+    <script>
+        let user = {
+            props: [ 'id', 'name', 'age' ],
+            template: `
+            <div>
+                <h3>User 组件内容 id: {{id}} name: {{name}} age: {{age}}</h3>
+                <button @click='registerHandel'>去注册</button>
+            </div>
+            `,
+            methods: {
+                registerHandel: function() {
+                    this.$router.push('/register')
+                }
+            }
+        };
+        let register = {
+            template: `
+            <div>
+                <h3>Register 组件内容</h3>
+                <button @click='backHandel'>返回</button>
+            </div>
+            `,
+            methods: {
+                backHandel: function() {
+                    this.$router.go('-1');
+                }
+            }
+        }
+        let router = new VueRouter({
+            routes: [
+                { path: '/', component: user, props: {id: 1, name: '张三', age: 18} },
+                { name: 'User', path: '/user/:id', component: user, props: (route) => ({ id: route.params.id, name: route.params.name, age: route.params.age }) },
+                { path: '/user', component: user, props: (route) => ({ id: route.query.id, name: route.query.name, age: route.query.age }) },
+                { path: '/register', component: register }
+            ]
+        });
+        let vm = new Vue({
+            el: '#app',
+            data: {},
+            router,
+            methods: {
+                strHandle: function() {
+                    console.log('hash: ', location.hash);
+                    if (location.hash !== '#/user/1') {
+                        this.$router.push('/user/1');
+                    }
+                },
+                objHandle: function() {
+                    console.log('hash: ', location.hash);
+                    if (location.hash !== '#/user/2') {
+                        this.$router.push({ path: '/user/2' });
+                    }
+                },
+                nameHandle: function() {
+                    console.log('hash: ', location.hash);
+                    if (location.hash !== '#/user/3') {
+                        this.$router.push({ name: 'User', params: { id: 3, name: '李四', age: 19 }});
+                    }
+                },
+                queryHandle: function() {
+                    console.log('hash: ', location.hash);
+                    let name = '王五';
+                    let ecName = encodeURI(name);
+                    if (location.hash !== `#/user?id=4&name=${ecName}&age=19`) {
+                        this.$router.push({ path: '/user', query: { id: 4, name: name, age: 20 }});
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

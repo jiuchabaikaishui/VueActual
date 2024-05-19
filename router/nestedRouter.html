@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-router嵌套路由</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>vue-router嵌套路由</h2>
+
+        <router-link to="/user">User</router-link>
+        <router-link to="/register">Register</router-link>
+
+        <router-view></router-view>
+    </div>
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-router_v3.6.5.js"></script>
+    <script>
+        const user = { template: `<h3>User 组件</h3>` };
+        const register = { 
+            template: `
+                <div>
+                    <h3>Register 组件</h3>
+
+                    <!-- 子路由连接 -->
+                    <router-link to='/register/tab1'>Tab1</router-link>
+                    <router-link to='/register/tab2'>Tab2</router-link>
+                    
+                    <!-- 子路由的占位符 -->
+                    <router-view></router-view>
+                </div>
+            ` 
+        };
+        const tab1 = {
+            template: `<h4>Tab1 子组件</h4>`
+        }
+        const tab2 = {
+            template: `<h4>Tab2 子组件</h4>`
+        }
+        const router = new VueRouter({
+            routes: [
+                { path: '/', component: user },
+                { path: '/user', component: user },
+                { path: '/register', component: register, 
+                    children: [
+                        { path: '/register', component: tab1 },
+                        { path: '/register/tab1', component: tab1 },
+                        { path: '/register/tab2', component: tab2 }
+                    ]
+                }
+            ]
+        });
+        const vm = new Vue({
+            el: '#app',
+            router
+        });
+    </script>
+</body>
+</html>

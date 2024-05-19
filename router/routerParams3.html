@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue-router路由组件传递参数三</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>vue-router路由组件传递参数三</h2>
+
+        <p>props 被设置为 函数类型：</p>
+        <router-link :to="{ path: '/user/3'}">User 3</router-link>
+
+        <router-view></router-view>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script src="../js/vue-router_v3.6.5.js"></script>
+    <script>
+        const user = {
+            // 使用 props 接收路由参数
+            props: ['id', 'name', 'age'],
+            template: `<h3>User 组件内容 id: {{id}}, name: {{name}}, age: {{age}}</h3>`
+        };
+        const router = new VueRouter({
+            routes: [
+                // 如果 props 是一个函数，则这个函数接收 route 对象为自己的形参
+                { path: '/user/:id', component: user, props: (route) => ({ id: route.params.id, name: route.params.name, age: route.params.age }) }
+            ]
+        });
+        const vm = new Vue({
+            el: '#app',
+            data: {},
+            router
+        });
+    </script>
+</body>
+</html>

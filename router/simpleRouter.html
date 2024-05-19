@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实现简易前端路由</title>
+
+    <link rel="stylesheet" href="../css/basic.css">
+</head>
+<body>
+    <div class="main" id="app">
+        <h2>实现简易前端路由</h2>
+        <a href="#/zhuye">主页</a>
+        <a href="#/keji">科技</a>
+        <a href="#/caijing">财经</a>
+        <a href="#/yule">娱乐</a>
+        <component :is="cname"></component>
+    </div>
+
+    <script src="../js/vue.js"></script>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                cname: 'zhuye'
+            },
+            components: {
+                'zhuye': {
+                    template: '<h3>主页内容</h3>'
+                }, 
+                'keji': {
+                    template: '<h3>科技内容</h3>'
+                }, 
+                'caijing': {
+                    template: '<h3>财经内容</h3>'
+                }, 
+                'yule': {
+                    template: '<h3>娱乐内容</h3>'
+                }
+            }
+        });
+        window.onhashchange = function() {
+            console.log('hash: ', location.hash.slice(1));
+            switch (location.hash.slice(1)) {
+                case '/zhuye':
+                    vm.cname = 'zhuye';
+                    break;
+                case '/keji':
+                    vm.cname = 'keji';
+                    break;
+                case '/caijing':
+                    vm.cname = 'caijing';
+                    break;
+                case '/yule':
+                    vm.cname = 'yule';
+                    break;
+            }
+        };
+    </script>
+</body>
+</html>
